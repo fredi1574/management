@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  type      String // "income" | "expense"
+  color     String    @default("#6366f1")
+  icon      String    @default("Tag")
+  createdAt DateTime  @default(now())
+  incomes   Income[]
+  expenses  Expense[]
+}
+
+model Income {
+  id          String   @id @default(cuid())
+  amount      Float
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  date        DateTime
+  notes       String?
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  amount      Float
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  date        DateTime
+  notes       String?
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model StockPurchase {
+  id           String   @id @default(cuid())
+  ticker       String
+  name         String?
+  quantity     Float
+  pricePerUnit Float
+  date         DateTime
+  broker       String?
+  fee          Float?
+  notes        String?
+  currentValue Float?
+  currency     String   @default("USD")
+  exchangeRate Float?
+  createdAt    DateTime @default(now())
+}
