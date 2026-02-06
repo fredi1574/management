@@ -90,71 +90,109 @@ export function MonthlyExpenses({ year, month, search = "" }: { year: number; mo
 
   const defaultDate = `${year}-${String(month).padStart(2, "0")}-01`;
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          <span className="rounded-xl bg-red-100 p-1.5 dark:bg-red-900/50">
-            <CategoryIcon name="TrendingDown" className="h-5 w-5 text-red-600 dark:text-red-400" />
-          </span>
-          Expenses
-        </h2>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setIsGrouped(!isGrouped)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-            title={isGrouped ? "Show individual" : "Group by category"}
-          >
-            {isGrouped ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-            <span className="hidden sm:inline">{isGrouped ? "List" : "Group"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(null);
-              setShowForm(!showForm);
-              setIsCreatingCategory(false);
-            }}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition ${showForm
-              ? "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
-              : "bg-red-600 text-white hover:bg-red-700"
+    <div className="card-elevated overflow-hidden rounded-2xl bg-[var(--card-bg)] ring-1 ring-[var(--border)] dark:ring-[var(--border)]">
+      <div className="space-y-5 p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 dark:bg-red-900/30">
+              <CategoryIcon name="TrendingDown" className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">Expenses</h2>
+              <p className="text-xs text-[var(--text-secondary)]">{expenses.length} transaction{expenses.length !== 1 ? 's' : ''}</p>
+            </div>
+          </div>
+          <div className="flex gap-1.5">
+            <button
+              type="button"
+              onClick={() => setIsGrouped(!isGrouped)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--background-secondary)] px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition duration-200 hover:bg-[var(--border)] hover:text-[var(--text-primary)]"
+              title={isGrouped ? "Show individual" : "Group by category"}
+            >
+              {isGrouped ? <List className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+              <span className="hidden sm:inline">{isGrouped ? "List" : "Group"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setShowForm(!showForm);
+                setIsCreatingCategory(false);
+              }}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition duration-200 ${
+                showForm
+                  ? "bg-[var(--background-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  : "bg-red-600 text-white hover:shadow-lg hover:brightness-110"
               }`}
-          >
-            {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            {showForm ? "Cancel" : "Add"}
-          </button>
+            >
+              {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+              {showForm ? "Cancel" : "Add"}
+            </button>
+          </div>
         </div>
-      </div>
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-4 space-y-3 rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-700 dark:bg-zinc-800/30">
-          <input name="amount" type="number" step="0.01" required placeholder="Amount (ILS)" className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800" />
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--background-secondary)] p-5">
+          <input
+            name="amount"
+            type="number"
+            step="0.01"
+            required
+            placeholder="Amount (ILS)"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+          />
           <div className="space-y-2">
             <select
               name="categoryId"
               required
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800"
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-[var(--text-primary)] transition focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
               onChange={(e) => setIsCreatingCategory(e.target.value === "new")}
             >
               <option value="" disabled selected>Select Category</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
-              <option value="new" className="font-bold text-indigo-600 dark:text-indigo-400">+ New Category...</option>
+              <option value="new" className="font-semibold">+ New Category...</option>
             </select>
             {isCreatingCategory && (
               <div className="flex gap-2 animate-in fade-in slide-in-from-top-1">
-                <input name="newCategoryName" type="text" required placeholder="Category Name" className="flex-1 rounded-xl border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800" />
-                <input name="newCategoryColor" type="color" defaultValue="#ef4444" className="h-10 w-16 rounded-xl border border-zinc-300 bg-white p-1 dark:border-zinc-600 dark:bg-zinc-800" />
+                <input
+                  name="newCategoryName"
+                  type="text"
+                  required
+                  placeholder="Category Name"
+                  className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+                />
+                <input
+                  name="newCategoryColor"
+                  type="color"
+                  defaultValue="#ef4444"
+                  className="h-10 w-16 rounded-lg border border-[var(--border)]"
+                />
               </div>
             )}
           </div>
-          <input name="date" type="date" defaultValue={defaultDate} required className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800" />
-          <input name="notes" type="text" placeholder="Notes" className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800" />
-          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <input name="isRecurring" type="checkbox" className="rounded border-zinc-300" />
-            Recurring
+          <input
+            name="date"
+            type="date"
+            defaultValue={defaultDate}
+            required
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+          />
+          <input
+            name="notes"
+            type="text"
+            placeholder="Notes (optional)"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50"
+          />
+          <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <input name="isRecurring" type="checkbox" className="rounded border-[var(--border)]" />
+            Recurring transaction
           </label>
-          <button type="submit" className="w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-red-600 px-4 py-2.5 font-medium text-white transition duration-200 hover:shadow-lg hover:brightness-110"
+          >
             {editingId ? "Save Change" : "Add Expense"}
           </button>
         </form>
@@ -196,11 +234,11 @@ export function MonthlyExpenses({ year, month, search = "" }: { year: number; mo
           ))}
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {expenses.map((item) => (
             <li
               key={item.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50/50 py-3 px-4 dark:border-zinc-800 dark:bg-zinc-800/30"
+              className="flex items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--background-secondary)]/50 px-4 py-3 transition duration-200 hover:bg-[var(--background-secondary)] hover:ring-1 hover:ring-[var(--primary)]/20"
             >
               {editingId === item.id ? (
                 <form onSubmit={(e) => { handleSubmit(e); setEditingId(null); }} className="flex w-full flex-wrap items-end gap-2">
@@ -226,18 +264,18 @@ export function MonthlyExpenses({ year, month, search = "" }: { year: number; mo
                       <CategoryIcon name={item.category.icon} categoryName={item.category.name} className="h-4 w-4" style={{ color: item.category.color }} />
                     </span>
                     <div className="min-w-0">
-                      <p className="font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">{formatCurrency(item.amount)}</p>
-                      <p className="flex flex-wrap items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+                      <p className="font-semibold tabular-nums text-[var(--text-primary)]">{formatCurrency(item.amount)}</p>
+                      <p className="flex flex-wrap items-center gap-1.5 text-sm text-[var(--text-secondary)]">
                         <span className="rounded-md px-1.5 py-0.5 text-xs font-medium" style={{ backgroundColor: `${item.category.color}15`, color: item.category.color }}>{item.category.name}</span>
                         {item.notes && <span>· {item.notes}</span>}
                       </p>
                     </div>
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <button type="button" onClick={() => setEditingId(item.id)} className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 dark:hover:bg-zinc-700 dark:hover:text-zinc-300" aria-label="Edit">
+                    <button type="button" onClick={() => setEditingId(item.id)} className="rounded-lg p-2 text-[var(--text-tertiary)] transition hover:bg-[var(--background-secondary)] hover:text-[var(--text-primary)]" aria-label="Edit">
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button type="button" onClick={() => handleDelete(item.id)} className="rounded-lg p-2 text-zinc-400 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400" aria-label="Delete">
+                    <button type="button" onClick={() => handleDelete(item.id)} className="rounded-lg p-2 text-[var(--text-tertiary)] transition hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400" aria-label="Delete">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

@@ -27,27 +27,33 @@ export function Nav() {
   ];
 
   return (
-    <nav className="sticky top-0 z-10 border-b border-zinc-200/80 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/95">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-3 py-3">
+    <nav className="sticky top-0 z-10 border-b border-[var(--border)]/40 bg-white/80 backdrop-blur-xl dark:bg-[var(--card-bg)]/80">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 font-semibold text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
+          className="flex items-center gap-3 rounded-xl px-3 py-2 font-bold text-[var(--text-primary)] transition duration-200 hover:bg-[var(--background-secondary)] dark:hover:bg-[var(--background-secondary)]"
         >
-          <Wallet className="h-5 w-5 text-indigo-500" />
-          <span className="hidden sm:inline">Finance</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] shadow-lg">
+            <Wallet className="h-5 w-5 text-white" />
+          </div>
+          <span className="hidden sm:inline bg-gradient-to-r from-[var(--primary)] to-[var(--primary-light)] bg-clip-text text-transparent">
+            Finance
+          </span>
         </Link>
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1">
+        <div className="flex items-center gap-1">
+          <div className="flex gap-1 rounded-xl bg-[var(--background-secondary)] p-1 dark:bg-[var(--background-secondary)]/50">
             {links.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition ${isActive
-                    ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-                    }`}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition duration-200 ${
+                    isActive
+                      ? "bg-white text-[var(--primary)] shadow-md dark:bg-[var(--card-bg)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:text-[var(--text-tertiary)] dark:hover:text-[var(--text-primary)]"
+                  }`}
+                  title={label}
                 >
                   <Icon className="h-4 w-4" />
                   <span className="hidden md:inline">{label}</span>
@@ -57,7 +63,7 @@ export function Nav() {
           </div>
           <button
             onClick={toggleTheme}
-            className="rounded-xl p-2 text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="ml-2 rounded-lg p-2 text-[var(--text-secondary)] transition duration-200 hover:bg-[var(--background-secondary)] hover:text-[var(--text-primary)]"
             aria-label="Toggle theme"
           >
             {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}

@@ -45,58 +45,77 @@ export function CurrentMonthDetail({ year, month }: { year: number; month: numbe
   }, [expenses]);
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Monthly Overview</h2>
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Monthly Overview</h2>
+        <p className="mt-1 text-[var(--text-secondary)]">Comprehensive view of your financial activity</p>
+      </div>
 
       {summary === null ? (
-        <div className="flex items-center justify-center rounded-2xl bg-white p-12 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+        <div className="flex items-center justify-center rounded-2xl bg-[var(--card-bg)] p-12 shadow-md ring-1 ring-[var(--border)]">
+          <Loader2 className="h-8 w-8 animate-spin text-[var(--text-tertiary)]" />
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Summary Cards */}
           <div className="space-y-4 lg:col-span-5">
-            <div className="flex items-start gap-4 rounded-2xl bg-emerald-50 p-5 shadow-sm ring-1 ring-emerald-100 dark:bg-emerald-950/30 dark:ring-emerald-900/50">
-              <div className="rounded-xl bg-emerald-500/20 p-2.5 dark:bg-emerald-500/30">
-                <ArrowDownCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Income</p>
-                <p className="mt-0.5 text-xl font-bold tabular-nums text-emerald-800 dark:text-emerald-200">
-                  {formatCurrency(summary.totalIncome)}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 rounded-2xl bg-red-50 p-5 shadow-sm ring-1 ring-red-100 dark:bg-red-950/30 dark:ring-red-900/50">
-              <div className="rounded-xl bg-red-500/20 p-2.5 dark:bg-red-500/30">
-                <ArrowUpCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-red-700 dark:text-red-300">Expenses</p>
-                <p className="mt-0.5 text-xl font-bold tabular-nums text-red-800 dark:text-red-200">
-                  {formatCurrency(summary.totalExpense)}
-                </p>
+            {/* Income Card */}
+            <div className="card-elevated overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-6 ring-1 ring-emerald-200/50 dark:from-emerald-950/30 dark:to-emerald-900/20 dark:ring-emerald-800/50">
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-emerald-500/20 p-3 dark:bg-emerald-500/30">
+                  <ArrowDownCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Income</p>
+                  <p className="mt-2 text-2xl font-bold tabular-nums text-emerald-800 dark:text-emerald-200">
+                    {formatCurrency(summary.totalIncome)}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex items-start gap-4 rounded-2xl bg-indigo-50 p-5 shadow-sm ring-1 ring-indigo-100 dark:bg-indigo-950/30 dark:ring-indigo-900/50">
-              <div className="rounded-xl bg-indigo-500/20 p-2.5 dark:bg-indigo-500/30">
-                <Wallet className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+
+            {/* Expenses Card */}
+            <div className="card-elevated overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 to-red-100/50 p-6 ring-1 ring-red-200/50 dark:from-red-950/30 dark:to-red-900/20 dark:ring-red-800/50">
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-red-500/20 p-3 dark:bg-red-500/30">
+                  <ArrowUpCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-red-700 dark:text-red-300">Expenses</p>
+                  <p className="mt-2 text-2xl font-bold tabular-nums text-red-800 dark:text-red-200">
+                    {formatCurrency(summary.totalExpense)}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Net Balance</p>
-                <p
-                  className={`mt-0.5 text-xl font-bold tabular-nums ${summary.balance >= 0 ? "text-indigo-800 dark:text-indigo-200" : "text-red-700 dark:text-red-300"
+            </div>
+
+            {/* Balance Card */}
+            <div className="card-elevated overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--primary)]/10 to-[var(--primary-light)]/10 p-6 ring-1 ring-[var(--primary)]/20 dark:from-[var(--primary)]/20 dark:to-[var(--primary-light)]/10 dark:ring-[var(--primary)]/40">
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-[var(--primary)]/20 p-3 dark:bg-[var(--primary)]/30">
+                  <Wallet className="h-6 w-6 text-[var(--primary)]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[var(--primary)]">Net Balance</p>
+                  <p
+                    className={`mt-2 text-2xl font-bold tabular-nums ${
+                      summary.balance >= 0
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-red-600 dark:text-red-400"
                     }`}
-                >
-                  {formatCurrency(summary.balance)}
-                </p>
+                  >
+                    {formatCurrency(summary.balance)}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Pie Chart */}
           <div className="lg:col-span-7">
-            <div className="h-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+            <div className="card-elevated h-full overflow-hidden rounded-2xl bg-[var(--card-bg)] p-6 ring-1 ring-[var(--border)]">
+              <h3 className="mb-6 text-lg font-semibold text-[var(--text-primary)]">Expense Breakdown</h3>
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                 <div className="h-[280px] flex-1">
                   <ResponsiveContainer width="100%" height="100%">
@@ -117,10 +136,10 @@ export function CurrentMonthDetail({ year, month }: { year: number; month: numbe
                       <Tooltip
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.9)",
+                          backgroundColor: "var(--card-bg)",
                           borderRadius: "12px",
-                          border: "none",
-                          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                          border: "1px solid var(--border)",
+                          boxShadow: "var(--shadow-md)",
                         }}
                       />
                       <Legend />
@@ -128,13 +147,21 @@ export function CurrentMonthDetail({ year, month }: { year: number; month: numbe
                   </ResponsiveContainer>
                 </div>
                 <div className="flex flex-col justify-center gap-4 sm:w-48">
-                  <div className="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Spent</p>
-                    <p className="text-lg font-bold text-red-600 dark:text-red-400">{formatCurrency(summary.totalExpense)}</p>
+                  <div className="rounded-xl bg-[var(--background-secondary)] p-4 dark:bg-[var(--background-secondary)]/50">
+                    <p className="text-xs font-semibold text-[var(--text-secondary)]">Total Spent</p>
+                    <p className="mt-2 text-lg font-bold text-red-600 dark:text-red-400">
+                      {formatCurrency(summary.totalExpense)}
+                    </p>
                   </div>
-                  <div className="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Monthly Net</p>
-                    <p className={`text-lg font-bold ${summary.balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+                  <div className="rounded-xl bg-[var(--background-secondary)] p-4 dark:bg-[var(--background-secondary)]/50">
+                    <p className="text-xs font-semibold text-[var(--text-secondary)]">Monthly Net</p>
+                    <p
+                      className={`mt-2 text-lg font-bold ${
+                        summary.balance >= 0
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
                       {formatCurrency(summary.balance)}
                     </p>
                   </div>
@@ -145,6 +172,7 @@ export function CurrentMonthDetail({ year, month }: { year: number; month: numbe
         </div>
       )}
 
+      {/* Detailed Lists */}
       <div className="grid gap-6 lg:grid-cols-2">
         <MonthlyIncomes year={year} month={month} />
         <MonthlyExpenses year={year} month={month} />
