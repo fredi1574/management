@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { ArrowDownCircle, ArrowUpCircle, Wallet, Loader2, LayoutGrid, PieChart as PieChartIcon } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, Wallet, Loader2, LayoutGrid, PieChart as PieChartIcon, TrendingDown, Target, Zap } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { Expense } from "@/types";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Summary {
   totalIncome: number;
@@ -12,21 +13,19 @@ interface Summary {
   balance: number;
 }
 
-/**
- * Displays income/expense/balance for the selected month with optional Chart view.
- */
-const ICON_FALLBACK: Record<string, string> = {
-  Salary: "Banknote",
-  Freelance: "Laptop",
-  Investments: "TrendingUp",
-  "Other income": "PlusCircle",
-  Food: "UtensilsCrossed",
-  Rent: "Home",
-  Utilities: "Zap",
-  Transport: "Car",
-  Shopping: "ShoppingBag",
-  Health: "HeartPulse",
-  Other: "Tag",
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
 };
 
 export function MonthlySummary({ year, month }: { year: number; month: number }) {
@@ -59,31 +58,34 @@ export function MonthlySummary({ year, month }: { year: number; month: number })
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center rounded-2xl bg-white p-8 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-        <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
+      <div className="flex items-center justify-center rounded-3xl glass p-12 shadow-sm">
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Monthly Performance</h2>
-        <div className="flex rounded-xl bg-zinc-100 p-1 dark:bg-zinc-800">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between px-2">
+        <div className="space-y-1">
+          <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">Financial Snapshot</h2>
+          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Real-time performance metrics</p>
+        </div>
+        <div className="flex rounded-2xl glass p-1 shadow-sm">
           <button
             onClick={() => setView("cards")}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${view === "cards"
-              ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
-              : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+            className={`rounded-xl p-2 transition ${view === "cards"
+              ? "bg-white text-amber-600 shadow-sm dark:bg-zinc-800 dark:text-amber-400"
+              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
               }`}
           >
             <LayoutGrid className="h-4 w-4" />
           </button>
           <button
             onClick={() => setView("chart")}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${view === "chart"
-              ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
-              : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+            className={`rounded-xl p-2 transition ${view === "chart"
+              ? "bg-white text-amber-600 shadow-sm dark:bg-zinc-800 dark:text-amber-400"
+              : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
               }`}
           >
             <PieChartIcon className="h-4 w-4" />
@@ -91,85 +93,137 @@ export function MonthlySummary({ year, month }: { year: number; month: number })
         </div>
       </div>
 
-      {view === "cards" ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="flex items-center gap-4 rounded-2xl bg-emerald-50 p-4 shadow-sm ring-1 ring-emerald-100 dark:bg-emerald-950/30 dark:ring-emerald-900/50">
-            <div className="rounded-xl bg-emerald-500/20 p-2.5 dark:bg-emerald-500/30">
-              <ArrowDownCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Income</p>
-              <p className="text-lg font-bold tabular-nums text-emerald-800 dark:text-emerald-200">{formatCurrency(data.totalIncome)}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 rounded-2xl bg-red-50 p-4 shadow-sm ring-1 ring-red-100 dark:bg-red-950/30 dark:ring-red-900/50">
-            <div className="rounded-xl bg-red-500/20 p-2.5 dark:bg-red-500/30">
-              <ArrowUpCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-red-700 dark:text-red-300">Expenses</p>
-              <p className="text-lg font-bold tabular-nums text-red-800 dark:text-red-200">{formatCurrency(data.totalExpense)}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 rounded-2xl bg-indigo-50 p-4 shadow-sm ring-1 ring-indigo-100 dark:bg-indigo-950/30 dark:ring-indigo-900/50">
-            <div className="rounded-xl bg-indigo-500/20 p-2.5 dark:bg-indigo-500/30">
-              <Wallet className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Balance</p>
-              <p className={`text-lg font-bold tabular-nums ${data.balance >= 0 ? "text-indigo-800 dark:text-indigo-200" : "text-red-700 dark:text-red-300"}`}>
-                {formatCurrency(data.balance)}
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center">
-            <div className="h-[250px] flex-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number) => formatCurrency(value)}
-                    contentStyle={{
-                      backgroundColor: "rgba(255, 255, 255, 0.9)",
-                      borderRadius: "12px",
-                      border: "none",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
+      <AnimatePresence mode="wait">
+        {view === "cards" ? (
+          <motion.div 
+            key="cards"
+            variants={container}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0, y: -20 }}
+            className="grid gap-6 sm:grid-cols-3"
+          >
+            <motion.div variants={item} className="group relative flex flex-col gap-4 overflow-hidden rounded-[2rem] glass p-6 shadow-xl transition-all hover:scale-[1.02] card-shine">
+              <div className="flex items-center justify-between">
+                <div className="rounded-2xl bg-emerald-100 p-3 dark:bg-emerald-900/40">
+                  <ArrowDownCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="h-2 w-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: "80%" }}
+                    className="h-full bg-emerald-500"
                   />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex flex-col justify-center gap-4 lg:w-64">
-              <div className="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Total Expenses</p>
-                <p className="text-xl font-bold text-red-600 dark:text-red-400">{formatCurrency(data.totalExpense)}</p>
+                </div>
               </div>
-              <div className="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Monthly Net</p>
-                <p className={`text-xl font-bold ${data.balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Revenue</p>
+                <p className="text-2xl font-black tabular-nums text-zinc-900 dark:text-zinc-50">{formatCurrency(data.totalIncome)}</p>
+              </div>
+            </motion.div>
+
+            <motion.div variants={item} className="group relative flex flex-col gap-4 overflow-hidden rounded-[2rem] glass p-6 shadow-xl transition-all hover:scale-[1.02] card-shine">
+              <div className="flex items-center justify-between">
+                <div className="rounded-2xl bg-rose-100 p-3 dark:bg-rose-900/40">
+                  <ArrowUpCircle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+                </div>
+                <div className="h-2 w-12 rounded-full bg-rose-100 dark:bg-rose-900/30 overflow-hidden">
+                   <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: data.totalIncome > 0 ? `${(data.totalExpense / data.totalIncome) * 100}%` : "100%" }}
+                    className="h-full bg-rose-500"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Operational Burn</p>
+                <p className="text-2xl font-black tabular-nums text-zinc-900 dark:text-zinc-50">{formatCurrency(data.totalExpense)}</p>
+              </div>
+            </motion.div>
+
+            <motion.div variants={item} className="group relative flex flex-col gap-4 overflow-hidden rounded-[2rem] glass p-6 shadow-xl transition-all hover:scale-[1.02] card-shine">
+              <div className="flex items-center justify-between">
+                <div className="rounded-2xl bg-indigo-100 p-3 dark:bg-indigo-900/40">
+                  <Wallet className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div className="text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-lg">
+                  {data.totalIncome > 0 ? ((data.balance / data.totalIncome) * 100).toFixed(0) : 0}% Net
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Retained Surplus</p>
+                <p className={`text-2xl font-black tabular-nums ${data.balance >= 0 ? "text-zinc-900 dark:text-zinc-50" : "text-rose-600 dark:text-rose-400"}`}>
                   {formatCurrency(data.balance)}
                 </p>
               </div>
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="chart"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="rounded-[2.5rem] glass p-8 shadow-xl"
+          >
+            <div className="flex flex-col gap-10 lg:flex-row lg:items-center">
+              <div className="h-[280px] flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={70}
+                      outerRadius={100}
+                      paddingAngle={8}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                                return (
+                                    <div className="rounded-2xl glass px-4 py-3 shadow-xl border-none">
+                                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{payload[0].name}</p>
+                                        <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 tabular-nums">
+                                            {formatCurrency(payload[0].value as number)}
+                                        </p>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col justify-center gap-4 lg:w-72">
+                <div className="rounded-2xl bg-zinc-50/50 p-5 dark:bg-zinc-800/30 border border-zinc-100/50 dark:border-zinc-800/50">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="h-3 w-3 text-rose-500" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Peak Burn</p>
+                  </div>
+                  <p className="text-2xl font-black text-rose-600 dark:text-rose-400">{formatCurrency(data.totalExpense)}</p>
+                </div>
+                <div className="rounded-2xl bg-zinc-50/50 p-5 dark:bg-zinc-800/30 border border-zinc-100/50 dark:border-zinc-800/50">
+                   <div className="flex items-center gap-2 mb-1">
+                    <Target className="h-3 w-3 text-emerald-500" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Retention Goal</p>
+                  </div>
+                  <p className={`text-2xl font-black ${data.balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                    {formatCurrency(data.balance)}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
